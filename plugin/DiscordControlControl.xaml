@@ -1,0 +1,183 @@
+<UserControl x:Class="User.DiscordControl.DiscordControlControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:styles="clr-namespace:SimHub.Plugins.Styles;assembly=SimHub.Plugins"
+             FontSize="13">
+
+    <UserControl.Resources>
+        <Style x:Key="Lbl" TargetType="TextBlock">
+            <Setter Property="Opacity" Value="0.45"/>
+            <Setter Property="FontSize" Value="10"/>
+            <Setter Property="Margin" Value="0,10,0,2"/>
+        </Style>
+        <Style x:Key="Val" TargetType="TextBlock">
+            <Setter Property="FontSize" Value="13"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+        </Style>
+        <Style x:Key="GreenVal" TargetType="TextBlock">
+            <Setter Property="FontSize" Value="13"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="Foreground" Value="#FF4CAF50"/>
+        </Style>
+        <Style x:Key="ActionName" TargetType="TextBlock">
+            <Setter Property="FontFamily" Value="Consolas"/>
+            <Setter Property="FontSize" Value="11"/>
+            <Setter Property="Foreground" Value="#FF2196F3"/>
+            <Setter Property="Margin" Value="0,1"/>
+        </Style>
+    </UserControl.Resources>
+
+    <Grid Margin="10">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*" MinWidth="400"/>
+            <ColumnDefinition Width="*" MinWidth="300"/>
+        </Grid.ColumnDefinitions>
+
+        <!-- ═══ LEFT: Configuration ═══════════════════════════════════════ -->
+        <StackPanel Grid.Column="0" Margin="0,0,12,0">
+
+            <!-- Status -->
+            <Grid Margin="0,0,0,6">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+                <TextBlock Grid.Column="0" x:Name="TxtStatus"
+                           FontSize="12" FontWeight="SemiBold" VerticalAlignment="Center"/>
+                <styles:SHButtonSecondary Grid.Column="1" x:Name="BtnRefresh"
+                                          Click="BtnRefresh_Click">↺ Actualiser</styles:SHButtonSecondary>
+            </Grid>
+
+            <StackPanel Orientation="Horizontal" Margin="0,0,0,6">
+                <TextBlock Text="Volume Discord :" Opacity="0.7" VerticalAlignment="Center" Margin="0,0,6,0"/>
+                <TextBlock x:Name="TxtVolume" Style="{StaticResource GreenVal}" VerticalAlignment="Center"/>
+            </StackPanel>
+
+            <StackPanel Orientation="Horizontal" Margin="0,0,0,12">
+                <styles:SHButtonSecondary Click="BtnVolDown_Click" Margin="0,0,4,0">Vol –</styles:SHButtonSecondary>
+                <styles:SHButtonSecondary Click="BtnVolUp_Click" Margin="0,0,4,0">Vol +</styles:SHButtonSecondary>
+                <styles:SHButtonSecondary Click="BtnMuteToggle_Click">Mute toggle</styles:SHButtonSecondary>
+            </StackPanel>
+
+            <!-- Volume step -->
+            <TextBlock Text="PAS DE VOLUME" Style="{StaticResource Lbl}"/>
+            <StackPanel Orientation="Horizontal" Margin="0,2,0,10">
+                <TextBlock Text="Chaque pression :" Opacity="0.7" VerticalAlignment="Center" Margin="0,0,6,0"/>
+                <ComboBox x:Name="VolumeStepCombo" Width="60" SelectionChanged="VolumeStepCombo_Changed"/>
+                <TextBlock Text="%" Opacity="0.7" VerticalAlignment="Center" Margin="4,0,0,0"/>
+            </StackPanel>
+
+            <!-- Keybinds section -->
+            <TextBlock Text="RACCOURCIS DISCORD" Style="{StaticResource Lbl}"/>
+            <TextBlock TextWrapping="Wrap" Opacity="0.55" FontSize="11" Margin="0,0,0,10">
+                Configure les mêmes raccourcis dans Discord → Paramètres → Raccourcis clavier.
+                Le plugin envoie ces raccourcis quand l'action SimHub est déclenchée.
+            </TextBlock>
+
+            <!-- Mic mute -->
+            <TextBlock Text="Toggle Micro" FontWeight="SemiBold" FontSize="11" Margin="0,2,0,2"/>
+            <StackPanel Orientation="Horizontal" Margin="0,0,0,8">
+                <CheckBox x:Name="MuteCtrl"  Content="Ctrl"  Click="SaveKeybinds" Margin="0,0,6,0"/>
+                <CheckBox x:Name="MuteShift" Content="Shift" Click="SaveKeybinds" Margin="0,0,6,0"/>
+                <CheckBox x:Name="MuteAlt"   Content="Alt"   Click="SaveKeybinds" Margin="0,0,6,0"/>
+                <TextBlock Text="+" Opacity="0.5" VerticalAlignment="Center" Margin="0,0,6,0"/>
+                <ComboBox x:Name="MuteKeyCombo" Width="80" SelectionChanged="SaveKeybinds"/>
+            </StackPanel>
+
+            <!-- Deafen -->
+            <TextBlock Text="Toggle Sourdine" FontWeight="SemiBold" FontSize="11" Margin="0,2,0,2"/>
+            <StackPanel Orientation="Horizontal" Margin="0,0,0,8">
+                <CheckBox x:Name="DeafenCtrl"  Content="Ctrl"  Click="SaveKeybinds" Margin="0,0,6,0"/>
+                <CheckBox x:Name="DeafenShift" Content="Shift" Click="SaveKeybinds" Margin="0,0,6,0"/>
+                <CheckBox x:Name="DeafenAlt"   Content="Alt"   Click="SaveKeybinds" Margin="0,0,6,0"/>
+                <TextBlock Text="+" Opacity="0.5" VerticalAlignment="Center" Margin="0,0,6,0"/>
+                <ComboBox x:Name="DeafenKeyCombo" Width="80" SelectionChanged="SaveKeybinds"/>
+            </StackPanel>
+
+            <!-- PTT -->
+            <TextBlock Text="Push-to-Talk (maintenir)" FontWeight="SemiBold" FontSize="11" Margin="0,2,0,2"/>
+            <StackPanel Orientation="Horizontal" Margin="0,0,0,8">
+                <CheckBox x:Name="PttCtrl"  Content="Ctrl"  Click="SaveKeybinds" Margin="0,0,6,0"/>
+                <CheckBox x:Name="PttShift" Content="Shift" Click="SaveKeybinds" Margin="0,0,6,0"/>
+                <CheckBox x:Name="PttAlt"   Content="Alt"   Click="SaveKeybinds" Margin="0,0,6,0"/>
+                <TextBlock Text="+" Opacity="0.5" VerticalAlignment="Center" Margin="0,0,6,0"/>
+                <ComboBox x:Name="PttKeyCombo" Width="80" SelectionChanged="SaveKeybinds"/>
+            </StackPanel>
+
+            <!-- Overlay -->
+            <TextBlock Text="Toggle Overlay" FontWeight="SemiBold" FontSize="11" Margin="0,2,0,2"/>
+            <StackPanel Orientation="Horizontal" Margin="0,0,0,8">
+                <CheckBox x:Name="OverlayCtrl"  Content="Ctrl"  Click="SaveKeybinds" Margin="0,0,6,0"/>
+                <CheckBox x:Name="OverlayShift" Content="Shift" Click="SaveKeybinds" Margin="0,0,6,0"/>
+                <CheckBox x:Name="OverlayAlt"   Content="Alt"   Click="SaveKeybinds" Margin="0,0,6,0"/>
+                <TextBlock Text="+" Opacity="0.5" VerticalAlignment="Center" Margin="0,0,6,0"/>
+                <ComboBox x:Name="OverlayKeyCombo" Width="80" SelectionChanged="SaveKeybinds"/>
+            </StackPanel>
+
+            <!-- Camera -->
+            <TextBlock Text="Toggle Caméra" FontWeight="SemiBold" FontSize="11" Margin="0,2,0,2"/>
+            <StackPanel Orientation="Horizontal" Margin="0,0,0,8">
+                <CheckBox x:Name="CameraCtrl"  Content="Ctrl"  Click="SaveKeybinds" Margin="0,0,6,0"/>
+                <CheckBox x:Name="CameraShift" Content="Shift" Click="SaveKeybinds" Margin="0,0,6,0"/>
+                <CheckBox x:Name="CameraAlt"   Content="Alt"   Click="SaveKeybinds" Margin="0,0,6,0"/>
+                <TextBlock Text="+" Opacity="0.5" VerticalAlignment="Center" Margin="0,0,6,0"/>
+                <ComboBox x:Name="CameraKeyCombo" Width="80" SelectionChanged="SaveKeybinds"/>
+            </StackPanel>
+
+            <!-- Screen share -->
+            <TextBlock Text="Toggle Partage écran" FontWeight="SemiBold" FontSize="11" Margin="0,2,0,2"/>
+            <StackPanel Orientation="Horizontal" Margin="0,0,0,16">
+                <CheckBox x:Name="ShareCtrl"  Content="Ctrl"  Click="SaveKeybinds" Margin="0,0,6,0"/>
+                <CheckBox x:Name="ShareShift" Content="Shift" Click="SaveKeybinds" Margin="0,0,6,0"/>
+                <CheckBox x:Name="ShareAlt"   Content="Alt"   Click="SaveKeybinds" Margin="0,0,6,0"/>
+                <TextBlock Text="+" Opacity="0.5" VerticalAlignment="Center" Margin="0,0,6,0"/>
+                <ComboBox x:Name="ShareKeyCombo" Width="80" SelectionChanged="SaveKeybinds"/>
+            </StackPanel>
+
+        </StackPanel>
+
+        <!-- ═══ RIGHT: Actions reference ═════════════════════════════════ -->
+        <Border Grid.Column="1" Background="#0DFFFFFF" CornerRadius="6" Padding="12,10">
+            <ScrollViewer VerticalScrollBarVisibility="Auto">
+                <StackPanel>
+
+                    <TextBlock Text="ACTIONS SIMHUB" Style="{StaticResource Lbl}" Margin="0,0,0,4"/>
+                    <TextBlock TextWrapping="Wrap" Opacity="0.55" FontSize="11" Margin="0,0,0,10">
+                        Mapper ces actions à tes boutons dans Controls and events → Add mapping.
+                    </TextBlock>
+
+                    <TextBlock Text="VOLUME (CORE AUDIO)" Style="{StaticResource Lbl}"/>
+                    <TextBlock Text="Contrôle le volume de l'app Discord dans le mixer Windows, indépendamment du volume global."
+                               Opacity="0.45" FontSize="10" TextWrapping="Wrap" Margin="0,0,0,4"/>
+                    <TextBlock Style="{StaticResource ActionName}" Text="DiscordVolumeUp"/>
+                    <TextBlock Style="{StaticResource ActionName}" Text="DiscordVolumeDown"/>
+                    <TextBlock Style="{StaticResource ActionName}" Text="DiscordVolumeMax"/>
+                    <TextBlock Style="{StaticResource ActionName}" Text="DiscordVolumeMin"/>
+                    <TextBlock Style="{StaticResource ActionName}" Text="DiscordAppMuteToggle"/>
+
+                    <TextBlock Text="RACCOURCIS DISCORD" Style="{StaticResource Lbl}"/>
+                    <TextBlock Text="Envoie le raccourci global configuré ci-contre. Nécessite la même configuration dans Discord."
+                               Opacity="0.45" FontSize="10" TextWrapping="Wrap" Margin="0,0,0,4"/>
+                    <TextBlock Style="{StaticResource ActionName}" Text="DiscordMicToggle"/>
+                    <TextBlock Style="{StaticResource ActionName}" Text="DiscordDeafenToggle"/>
+                    <TextBlock Style="{StaticResource ActionName}" Text="DiscordPushToTalk (maintenir)"/>
+                    <TextBlock Style="{StaticResource ActionName}" Text="DiscordOverlayToggle"/>
+                    <TextBlock Style="{StaticResource ActionName}" Text="DiscordCameraToggle"/>
+                    <TextBlock Style="{StaticResource ActionName}" Text="DiscordScreenShareToggle"/>
+
+                    <TextBlock Text="PROPRIÉTÉS OVERLAY" Style="{StaticResource Lbl}"/>
+                    <TextBlock Style="{StaticResource ActionName}" Text="DiscordVolume (0-100)"/>
+                    <TextBlock Style="{StaticResource ActionName}" Text="DiscordIsMuted (true/false)"/>
+                    <TextBlock Style="{StaticResource ActionName}" Text="DiscordIsRunning (true/false)"/>
+
+                    <!-- Debug info -->
+                    <TextBlock Text="DIAGNOSTIC" Style="{StaticResource Lbl}"/>
+                    <TextBlock x:Name="TxtDebug" TextWrapping="Wrap" Opacity="0.4" FontSize="10"
+                               FontFamily="Consolas"/>
+
+                </StackPanel>
+            </ScrollViewer>
+        </Border>
+
+    </Grid>
+</UserControl>
