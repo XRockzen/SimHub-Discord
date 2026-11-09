@@ -1,5 +1,6 @@
 using GameReaderCommon;
 using SimHub.Plugins;
+using System;
 using System.Windows.Media;
 
 namespace User.DiscordControl
@@ -12,6 +13,10 @@ namespace User.DiscordControl
         internal DiscordControlSettings Settings;
         private  DiscordAudioController _audio;
         private  int _frameCounter;
+        private  readonly object _saveLock = new object();
+
+        internal DiscordRpcClient Rpc      { get; private set; }
+        internal DiscordRpcStore  RpcStore { get; private set; }
 
         public PluginManager PluginManager { get; set; }
         public ImageSource   PictureIcon   { get { return null; } }
@@ -19,7 +24,10 @@ namespace User.DiscordControl
 
         public void Init(PluginManager pluginManager)
         {
-            SimHub.Logging.Current.Info("[DiscordControl] Starting");
+            SimHub.Logging.Current.Info("[DiscordControl] Starting " + PluginUpdater.Format(PluginUpdater.CurrentVersion));
+
+            PluginUpdater.CleanupPrevious();
+            PluginUpdater.CheckInBackground();
 
             Settings = this.ReadCommonSettings<DiscordControlSettings>(
                 "GeneralSettings", () => new DiscordControlSettings());
@@ -88,6 +96,67 @@ namespace User.DiscordControl
                     Settings.PttShift, Settings.PttAlt));
 
             _audio.Refresh(true);
+
+            InitRpc();
+        }
+
+        // ─── API locale de Discord (RPC) ──────────────────────────────────
+
+        private void InitRpc()
+        {
+            RpcStore = new DiscordRpcStore(this);
+            Rpc = new DiscordRpcClient(RpcStore, line => SimHub.Logging.Current.Info("[DiscordControl] RPC : " + line));
+
+            this.AttachDelegate("DiscordRpcConnected",    () => Rpc.IsReady);
+            this.AttachDelegate("DiscordRpcMicMuted",     () => Rpc.MicMuted);
+            this.AttachDelegate("DiscordRpcDeafened",     () => Rpc.Deafened);
+            this.AttachDelegate("DiscordRpcOutputVolume", () => (int)Math.Round(Rpc.OutputVolume));
+            this.AttachDelegate("DiscordRpcInputVolume",  () => (int)Math.Round(Rpc.InputVolume));
+            this.AttachDelegate("DiscordRpcVoiceChannel", () => Rpc.VoiceChannel);
+
+            AddRpcAction("DiscordRpcMicToggle",          "mic");
+            AddRpcAction("DiscordRpcDeafenToggle",       "deafen");
+            AddRpcAction("DiscordRpcOutputVolumeUp",     "out+");
+            AddRpcAction("DiscordRpcOutputVolumeDown",   "out-");
+            AddRpcAction("DiscordRpcInputVolumeUp",      "in+");
+            AddRpcAction("DiscordRpcInputVolumeDown",    "in-");
+            AddRpcAction("DiscordRpcHangUp",             "hangup");
+            AddRpcAction("DiscordRpcCameraToggle",       "video");
+            AddRpcAction("DiscordRpcScreenShareToggle",  "share");
+            AddRpcAction("DiscordRpcSoundboardPlay",     "sound");
+
+            if (Settings.RpcAutoConnect && !string.IsNullOrEmpty(RpcStore.AccessToken))
+                Rpc.Connect(false);
+        }
+
+        private void AddRpcAction(string name, string command)
+        {
+            this.AddAction(name, (a, b) => RunRpcCommand(command));
+        }
+
+        internal void RunRpcCommand(string command)
+        {
+            switch (command)
+            {
+                case "mic":    Rpc.ToggleMic(); break;
+                case "deafen": Rpc.ToggleDeafen(); break;
+                case "out+":   Rpc.AdjustOutputVolume(Settings.VolumeStep); break;
+                case "out-":   Rpc.AdjustOutputVolume(-Settings.VolumeStep); break;
+                case "in+":    Rpc.AdjustInputVolume(Settings.VolumeStep); break;
+                case "in-":    Rpc.AdjustInputVolume(-Settings.VolumeStep); break;
+                case "hangup": Rpc.HangUp(); break;
+                case "video":  Rpc.ToggleVideo(); break;
+                case "share":  Rpc.ToggleScreenShare(); break;
+                case "sound":
+                    if (!string.IsNullOrEmpty(Settings.RpcSoundId))
+                        Rpc.PlaySound(Settings.RpcSoundGuildId, Settings.RpcSoundId);
+                    break;
+            }
+        }
+
+        internal void SaveSettings()
+        {
+            lock (_saveLock) this.SaveCommonSettings("GeneralSettings", Settings);
         }
 
         public void DataUpdate(PluginManager pluginManager, ref GameData data)
@@ -100,7 +169,8 @@ namespace User.DiscordControl
 
         public void End(PluginManager pluginManager)
         {
-            this.SaveCommonSettings("GeneralSettings", Settings);
+            if (Rpc != null) Rpc.Stop();
+            SaveSettings();
         }
 
         public System.Windows.Controls.Control GetWPFSettingsControl(PluginManager pluginManager)

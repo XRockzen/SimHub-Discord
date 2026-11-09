@@ -10,6 +10,8 @@ Exemple d'usage : un encodeur rotatif monte ou baisse le volume de tes coéquipi
 2. Ferme SimHub et copie la DLL dans le dossier de SimHub (souvent `C:\Program Files (x86)\SimHub`).
 3. Lance SimHub, accepte d'activer le plugin, puis ouvre **Discord Control** dans le menu de gauche.
 
+À partir de la v1.1.0, le plugin vérifie au démarrage de SimHub s'il existe une version plus récente sur GitHub. Un bandeau propose alors de l'installer ; elle s'active au redémarrage suivant de SimHub. La version installée est affichée en bas de l'onglet.
+
 ## Configuration
 
 ### 1. Volume

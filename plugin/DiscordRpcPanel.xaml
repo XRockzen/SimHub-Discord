@@ -1,0 +1,73 @@
+<UserControl x:Class="User.DiscordControl.DiscordRpcPanel"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:styles="clr-namespace:SimHub.Plugins.Styles;assembly=SimHub.Plugins"
+             FontSize="13">
+
+    <UserControl.Resources>
+        <Style x:Key="Lbl" TargetType="TextBlock">
+            <Setter Property="Opacity" Value="0.45"/>
+            <Setter Property="FontSize" Value="10"/>
+            <Setter Property="Margin" Value="0,12,0,4"/>
+        </Style>
+    </UserControl.Resources>
+
+    <Grid Margin="10">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*" MinWidth="400"/>
+            <ColumnDefinition Width="*" MinWidth="300"/>
+        </Grid.ColumnDefinitions>
+
+        <StackPanel Grid.Column="0" Margin="0,0,12,0">
+            <TextBlock x:Name="TxtStatus" FontSize="14" FontWeight="SemiBold"/>
+            <TextBlock x:Name="TxtVoice" Opacity="0.8" Margin="0,4,0,0" TextWrapping="Wrap"/>
+            <TextBlock x:Name="TxtScopes" Opacity="0.5" FontSize="11" Margin="0,4,0,0" TextWrapping="Wrap"/>
+
+            <TextBlock Text="APPLICATION DISCORD" Style="{StaticResource Lbl}"/>
+            <TextBlock Text="Client ID" FontSize="11" Opacity="0.7"/>
+            <TextBox x:Name="TxtClientId" Margin="0,2,0,6"/>
+            <TextBlock Text="Client secret (laisser vide pour garder celui déjà enregistré)" FontSize="11" Opacity="0.7"/>
+            <PasswordBox x:Name="TxtClientSecret" Margin="0,2,0,6"/>
+            <TextBlock Text="Droits demandés" FontSize="11" Opacity="0.7"/>
+            <TextBox x:Name="TxtScopes2" Margin="0,2,0,6"/>
+            <CheckBox x:Name="ChkAutoConnect" Content="Se connecter au démarrage de SimHub" Margin="0,2,0,8"/>
+            <WrapPanel>
+                <styles:SHButtonSecondary Margin="0,0,4,4" Click="Connect_Click">Connecter</styles:SHButtonSecondary>
+                <styles:SHButtonSecondary Margin="0,0,4,4" Click="Disconnect_Click">Déconnecter</styles:SHButtonSecondary>
+                <styles:SHButtonSecondary Margin="0,0,4,4" Click="Forget_Click">Oublier l'autorisation</styles:SHButtonSecondary>
+            </WrapPanel>
+
+            <TextBlock Text="COMMANDES DOCUMENTÉES" Style="{StaticResource Lbl}"/>
+            <WrapPanel>
+                <styles:SHButtonSecondary Margin="0,0,4,4" Click="Command_Click" Tag="mic">Micro</styles:SHButtonSecondary>
+                <styles:SHButtonSecondary Margin="0,0,4,4" Click="Command_Click" Tag="deafen">Sourdine</styles:SHButtonSecondary>
+                <styles:SHButtonSecondary Margin="0,0,4,4" Click="Command_Click" Tag="out-">Sortie –</styles:SHButtonSecondary>
+                <styles:SHButtonSecondary Margin="0,0,4,4" Click="Command_Click" Tag="out+">Sortie +</styles:SHButtonSecondary>
+                <styles:SHButtonSecondary Margin="0,0,4,4" Click="Command_Click" Tag="in-">Micro –</styles:SHButtonSecondary>
+                <styles:SHButtonSecondary Margin="0,0,4,4" Click="Command_Click" Tag="in+">Micro +</styles:SHButtonSecondary>
+                <styles:SHButtonSecondary Margin="0,0,4,4" Click="Command_Click" Tag="hangup">Raccrocher</styles:SHButtonSecondary>
+            </WrapPanel>
+
+            <TextBlock Text="COMMANDES NON DOCUMENTÉES (À TESTER)" Style="{StaticResource Lbl}"/>
+            <WrapPanel>
+                <styles:SHButtonSecondary Margin="0,0,4,4" Click="Command_Click" Tag="video">Caméra</styles:SHButtonSecondary>
+                <styles:SHButtonSecondary Margin="0,0,4,4" Click="Command_Click" Tag="share">Partage d'écran</styles:SHButtonSecondary>
+            </WrapPanel>
+            <StackPanel Orientation="Horizontal" Margin="0,4,0,0">
+                <ComboBox x:Name="SoundCombo" Width="200" Margin="0,0,4,4" SelectionChanged="SoundCombo_Changed"/>
+                <styles:SHButtonSecondary Margin="0,0,4,4" Click="LoadSounds_Click">Charger les sons</styles:SHButtonSecondary>
+                <styles:SHButtonSecondary Margin="0,0,4,4" Click="Command_Click" Tag="sound">Jouer</styles:SHButtonSecondary>
+            </StackPanel>
+        </StackPanel>
+
+        <Grid Grid.Column="1">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+            <TextBlock Text="JOURNAL" Style="{StaticResource Lbl}" Margin="0,0,0,4"/>
+            <TextBox x:Name="TxtLog" Grid.Row="1" IsReadOnly="True" TextWrapping="Wrap" MinHeight="300"
+                     VerticalScrollBarVisibility="Auto" FontFamily="Consolas" FontSize="11"/>
+        </Grid>
+    </Grid>
+</UserControl>

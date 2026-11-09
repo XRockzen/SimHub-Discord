@@ -67,6 +67,7 @@
     <Reference Include="PresentationFramework" />
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Security" />
     <Reference Include="System.Xaml" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="WindowsBase" />
@@ -78,11 +79,21 @@
     </Compile>
     <Compile Include="DiscordControlPlugin.cs" />
     <Compile Include="DiscordControlSettings.cs" />
+    <Compile Include="DiscordRpcClient.cs" />
+    <Compile Include="DiscordRpcPanel.xaml.cs">
+      <DependentUpon>DiscordRpcPanel.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="DiscordRpcStore.cs" />
     <Compile Include="KeyboardHelper.cs" />
+    <Compile Include="PluginUpdater.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <Page Include="DiscordControlControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="DiscordRpcPanel.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

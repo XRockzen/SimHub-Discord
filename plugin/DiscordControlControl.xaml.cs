@@ -30,7 +30,99 @@ namespace User.DiscordControl
         {
             InitializeComponent();
             _plugin = plugin;
-            Loaded += (s, e) => LoadSettings();
+            RpcPanel.Attach(plugin);
+            TxtVersion.Text = "Discord Control " + PluginUpdater.Format(PluginUpdater.CurrentVersion);
+            Loaded += (s, e) =>
+            {
+                LoadSettings();
+                PluginUpdater.Changed += OnUpdateChanged;
+                RefreshUpdateBanner();
+            };
+            Unloaded += (s, e) => PluginUpdater.Changed -= OnUpdateChanged;
+        }
+
+        // ─── Mise à jour ──────────────────────────────────────────────────
+
+        private bool _manualCheck;
+
+        private void OnUpdateChanged()
+        {
+            Dispatcher.BeginInvoke(new Action(() =>
+            {
+                RefreshUpdateBanner();
+                if (!_manualCheck) return;
+                _manualCheck = false;
+                if (PluginUpdater.LastError != null)
+                    TxtUpdateStatus.Text = "Vérification impossible : " + PluginUpdater.LastError;
+                else if (PluginUpdater.Available == null)
+                    TxtUpdateStatus.Text = "Tu as la dernière version (" + PluginUpdater.Format(PluginUpdater.CurrentVersion) + ")";
+                else
+                    TxtUpdateStatus.Text = "";
+            }));
+        }
+
+        private void RefreshUpdateBanner()
+        {
+            if (PluginUpdater.PendingRestartVersion != null)
+            {
+                UpdateBanner.Visibility = Visibility.Visible;
+                UpdateButtons.Visibility = Visibility.Collapsed;
+                TxtUpdateTitle.Text = "✔ Mise à jour " + PluginUpdater.Format(PluginUpdater.PendingRestartVersion) + " installée";
+                TxtUpdateNotes.Text = "Redémarre SimHub pour l'activer.";
+                return;
+            }
+
+            var info = PluginUpdater.Available;
+            if (info == null || PluginUpdater.Dismissed)
+            {
+                UpdateBanner.Visibility = Visibility.Collapsed;
+                return;
+            }
+
+            UpdateBanner.Visibility = Visibility.Visible;
+            UpdateButtons.Visibility = Visibility.Visible;
+            BtnUpdateInstall.IsEnabled = true;
+            TxtUpdateTitle.Text = string.Format("⬆ Mise à jour {0} disponible  (installée : {1})",
+                PluginUpdater.Format(info.Version), PluginUpdater.Format(PluginUpdater.CurrentVersion));
+            TxtUpdateNotes.Text = string.IsNullOrEmpty(info.Notes) ? "" : info.Notes.Replace("\r", "");
+        }
+
+        private void BtnUpdateInstall_Click(object sender, RoutedEventArgs e)
+        {
+            BtnUpdateInstall.IsEnabled = false;
+            TxtUpdateTitle.Text = "Téléchargement et vérification…";
+            PluginUpdater.InstallInBackground(error => Dispatcher.BeginInvoke(new Action(() =>
+            {
+                if (error == null)
+                {
+                    RefreshUpdateBanner();
+                    return;
+                }
+                BtnUpdateInstall.IsEnabled = true;
+                TxtUpdateTitle.Text = "Échec de la mise à jour";
+                TxtUpdateNotes.Text = error;
+            })));
+        }
+
+        private void BtnUpdateNotes_Click(object sender, RoutedEventArgs e)
+        {
+            var info = PluginUpdater.Available;
+            if (info != null && !string.IsNullOrEmpty(info.HtmlUrl))
+                try { Process.Start(info.HtmlUrl); } catch (Exception) { }
+        }
+
+        private void BtnUpdateLater_Click(object sender, RoutedEventArgs e)
+        {
+            PluginUpdater.Dismissed = true;
+            RefreshUpdateBanner();
+        }
+
+        private void LnkCheckUpdate_Click(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        {
+            _manualCheck = true;
+            PluginUpdater.Dismissed = false;
+            TxtUpdateStatus.Text = "Recherche de mise à jour…";
+            PluginUpdater.CheckInBackground();
         }
 
         private void LoadSettings()

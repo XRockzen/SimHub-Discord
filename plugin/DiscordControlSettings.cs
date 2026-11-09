@@ -39,9 +39,24 @@ namespace User.DiscordControl
         public bool ScreenShareShift { get; set; }
         public bool ScreenShareAlt   { get; set; }
 
+        // API locale de Discord (RPC). Secret et jetons sont chiffrés par DiscordRpcStore.
+        public string   RpcClientId              { get; set; }
+        public string   RpcClientSecretProtected { get; set; }
+        public string   RpcAccessTokenProtected  { get; set; }
+        public string   RpcRefreshTokenProtected { get; set; }
+        public System.DateTime RpcTokenExpiresUtc { get; set; }
+        public string   RpcScopes                { get; set; }
+        public bool     RpcAutoConnect           { get; set; }
+        public string   RpcSoundName             { get; set; }
+        public string   RpcSoundGuildId          { get; set; }
+        public string   RpcSoundId               { get; set; }
+
         public DiscordControlSettings()
         {
             VolumeStep = 10;
+            RpcClientId = "";
+            RpcScopes = "rpc rpc.voice.read rpc.voice.write rpc.video.write rpc.screenshare.write";
+            RpcAutoConnect = true;
         }
     }
 }
