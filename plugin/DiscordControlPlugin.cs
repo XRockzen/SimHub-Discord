@@ -19,7 +19,7 @@ namespace User.DiscordControl
         internal DiscordRpcStore  RpcStore { get; private set; }
 
         public PluginManager PluginManager { get; set; }
-        public ImageSource   PictureIcon   { get { return null; } }
+        public ImageSource   PictureIcon   { get { return PluginIcon.Image; } }
         public string        LeftMenuTitle { get { return "Discord Control"; } }
 
         public void Init(PluginManager pluginManager)

@@ -85,6 +85,7 @@
     </Compile>
     <Compile Include="DiscordRpcStore.cs" />
     <Compile Include="KeyboardHelper.cs" />
+    <Compile Include="PluginIcon.cs" />
     <Compile Include="PluginUpdater.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

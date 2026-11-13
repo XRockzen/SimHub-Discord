@@ -1,5 +1,9 @@
 # Changelog
 
+## v1.1.1
+
+- Le logo Discord remplace l'icône par défaut dans le menu de gauche de SimHub.
+
 ## v1.1.0
 
 - Mise à jour automatique : au démarrage, le plugin compare sa version à la dernière release GitHub et propose de l'installer (fichier vérifié par SHA-256, activation au prochain redémarrage de SimHub).
